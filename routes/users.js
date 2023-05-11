@@ -15,7 +15,7 @@ router.post("/signup", async (req, res) => {
     const user = await User.findOne({ email: email });
 
     if (user) {
-      res.status(409).json({ message: message.error });
+      res.status(409).json({ message: "L'adresse e-mail est déjà utilisé" });
     } else {
       const salt = uid2(16);
       const hash = SHA256(password + salt).toString(encBase64);
@@ -53,7 +53,7 @@ router.post("/login", async (req, res) => {
       return res.status(401).json({ message: "Aucun compte trouvé" });
     }
 
-    const newHash = SHA256(existingUser.salt + password).toString(encBase64);
+    const newHash = SHA256(password + existingUser.salt).toString(encBase64);
 
     //
     if (newHash !== existingUser.hash) {
