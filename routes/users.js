@@ -1,6 +1,5 @@
 const express = require("express");
 const router = express.Router();
-const axios = require("axios");
 const User = require("../models/User");
 const uid2 = require("uid2");
 const SHA256 = require("crypto-js/sha256");
@@ -13,13 +12,13 @@ router.post("/signup", async (req, res) => {
   try {
     const { username, email, password } = req.body;
 
-    const user = await User.findOne({ email: req.body.email });
+    const user = await User.findOne({ email: email });
 
     if (user) {
-      res.status(409).json({ message: "This email already has an account" });
+      res.status(409).json({ message: message.error });
     } else {
       const salt = uid2(16);
-      const hash = SHA256(salt + password).toString(encBase64);
+      const hash = SHA256(password + salt).toString(encBase64);
       const token = uid2(64);
       const newUser = new User({
         email: email,
