@@ -14,7 +14,7 @@ const comicRoutes = require("./routes/comics");
 app.use(comicRoutes);
 const charactersRoutes = require("./routes/characters");
 app.use(charactersRoutes);
-const userRoutes = require("./routes/user");
+const userRoutes = require("./routes/users");
 app.use(userRoutes);
 
 app.all("*", (req, res) => {
