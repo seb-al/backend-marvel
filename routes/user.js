@@ -12,26 +12,26 @@ const encBase64 = require("crypto-js/enc-base64");
 router.post("/signup", async (req, res) => {
   try {
     const { username, email, password } = req.body;
+    if (req.body.email && req.body.password && req.body.username) {
+      const salt = uid2(16);
+      const hash = SHA256(salt + password).toString(encBase64);
+      const token = uid2(64);
+      const newUser = new User({
+        email: email,
+        username: username,
+        hash: hash,
+        token: token,
+        salt: salt,
+      });
+      await newUser.save();
 
-    const salt = uid2(16);
-    const hash = SHA256(salt + password).toString(encBase64);
-    const token = uid2(64);
-    const newUser = new User({
-      email: email,
-
-      username: username,
-
-      hash: hash,
-      token: token,
-      salt: salt,
-    });
-    await newUser.save();
-
-    res.status(201).json({
-      _id: newUser._id,
-      token: newUser.token,
-      username: newUser.username,
-    });
+      res.status(201).json({
+        email: newUser.email,
+        _id: newUser._id,
+        token: newUser.token,
+        username: newUser.username,
+      });
+    }
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
