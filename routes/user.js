@@ -12,7 +12,12 @@ const encBase64 = require("crypto-js/enc-base64");
 router.post("/signup", async (req, res) => {
   try {
     const { username, email, password } = req.body;
-    if (req.body.email && req.body.password && req.body.username) {
+
+    const user = await User.findOne({ email: req.body.email });
+
+    if (user) {
+      res.status(409).json({ message: "This email already has an account" });
+    } else {
       const salt = uid2(16);
       const hash = SHA256(salt + password).toString(encBase64);
       const token = uid2(64);
