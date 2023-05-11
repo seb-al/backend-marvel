@@ -12,11 +12,7 @@ const encBase64 = require("crypto-js/enc-base64");
 router.post("/signup", async (req, res) => {
   try {
     const { username, email, password } = req.body;
-    if (!username) {
-      return res
-        .status(409)
-        .json({ message: "Veuillez renseigner les champs" });
-    }
+
     const existingEmail = await User.findOne({ email: email });
     if (existingEmail === null) {
       const salt = uid2(16);
