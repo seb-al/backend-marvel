@@ -13,30 +13,25 @@ router.post("/signup", async (req, res) => {
   try {
     const { username, email, password } = req.body;
 
-    const existingEmail = await User.findOne({ email: email });
-    if (existingEmail === null) {
-      const salt = uid2(16);
-      const hash = SHA256(salt + password).toString(encBase64);
-      const token = uid2(64);
-      const newUser = new User({
-        email: email,
+    const salt = uid2(16);
+    const hash = SHA256(salt + password).toString(encBase64);
+    const token = uid2(64);
+    const newUser = new User({
+      email: email,
 
-        username: username,
+      username: username,
 
-        hash: hash,
-        token: token,
-        salt: salt,
-      });
-      await newUser.save();
+      hash: hash,
+      token: token,
+      salt: salt,
+    });
+    await newUser.save();
 
-      res.status(201).json({
-        _id: newUser._id,
-        token: newUser.token,
-        username: newUser.username,
-      });
-    } else {
-      return res.status(409).json({ message: "L'utilisateur existe déjà" });
-    }
+    res.status(201).json({
+      _id: newUser._id,
+      token: newUser.token,
+      username: newUser.username,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
