@@ -49,21 +49,24 @@ router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
     const existingUser = await User.findOne({ email: email });
-    if (existingUser === null) {
-      return res.status(401).json({ message: "Aucun compte trouvé" });
-    }
+    if (email && password) {
+      if (existingUser === null) {
+        return res.status(401).json({ message: "Aucun compte trouvé" });
+      }
 
-    const newHash = SHA256(password + existingUser.salt).toString(encBase64);
+      const newHash = SHA256(password + existingUser.salt).toString(encBase64);
 
-    //
-    if (newHash !== existingUser.hash) {
-      return res.status(401).json({ message: "Aucun compte trouvé" });
+      if (newHash !== existingUser.hash) {
+        return res.status(401).json({ message: "Aucun compte trouvé" });
+      }
+      res.status(201).json({
+        _id: existingUser._id,
+        token: existingUser.token,
+        account: existingUser.account,
+      });
+    } else {
+      res.status(400).json({ message: "Veuillez renseigner les champs" });
     }
-    res.status(201).json({
-      _id: existingUser._id,
-      token: existingUser.token,
-      account: existingUser.account,
-    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
